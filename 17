@@ -1,0 +1,134 @@
+#include<stdio.h>
+#include<conio.h>
+struct process
+{
+      int artime,  btime,  cutime,  wttime,  turnaround_time, priority , status;
+}
+process_queue[10];
+int number_of_process;
+
+void Sorting_of_Arrival_Time()
+{
+      struct process x;
+      int i, j;
+      for(i = 0; i < number_of_process - 1; i++)
+      {
+            for(j = i + 1; j < number_of_process; j++)
+            {
+                  if(process_queue[i].artime > process_queue[j].artime)
+                  {
+                        x= process_queue[i];
+                        process_queue[i] = process_queue[j];
+                        process_queue[j] = x;
+                  }
+            }
+      }
+}
+int main()
+{
+      printf("\nPress 1 for Round Robin Scheduling");
+      printf("\nPress 2 for Priority Scheduling");
+      printf("\nEnter your choice :: ");
+      int choice;
+      scanf("%d",&choice);
+ switch(choice)
+      {
+       case 1:
+       {
+              int count, j , n , total_time ,left_process ,flag=0 , time_quantum; 
+              int wttime=0, turnaround_time=0, artime[10] , btime[10], remaining_time[10]; 
+              printf("\nEnter no of process :: "); 
+              scanf("%d",&n); 
+              left_process=n; 
+              for(count=0;count<n;count++) 
+              { 
+                printf("\nProcess%d\n",count+1); 
+                printf("Enter Arrival time :: "); 
+                scanf("%d",&artime[count]); 
+                printf("Enter Burst time :: ");
+                scanf("%d",&btime[count]); 
+                remaining_time[count]=btime[count]; 
+              } 
+ printf("Enter Time Quantum ::"); 
+              scanf("%d",&time_quantum); 
+              printf("\n\nProcess\t|Turnaround Time|Waiting Time\n\n"); 
+              for(total_time=0,count=0;left_process!=0;) 
+              { 
+                if(remaining_time[count]<=time_quantum && remaining_time[count]>0) 
+                { 
+                  total_time+=remaining_time[count]; 
+                  remaining_time[count]=0; 
+                  flag=1; 
+                } 
+                else if(remaining_time[count]>0) 
+                { 
+                  remaining_time[count]-=time_quantum; 
+                  total_time+=time_quantum; 
+                } 
+                if(remaining_time[count]==0 && flag==1) 
+                { 
+                  left_process--; 
+                  printf("P%d\t|\t%d\t|\t%d\n",count+1,total_time-artime[count],total_time-artime[count]-btime[count]); 
+                  wttime+=total_time-artime[count]-btime[count]; 
+                  turnaround_time+=total_time-artime[count]; 
+                  flag=0; 
+                } 
+                if(count==n-1) 
+                  count=0; 
+                else if(artime[count+1]<=total_time) 
+                  count++; 
+                else 
+                  count=0; 
+              } 
+              printf("\nAverage Waiting Time= %f\n",wttime*1.0/n); 
+              printf("Avg Turnaround Time = %f",turnaround_time*1.0/n); 
+              break;
+       }
+       case 2:
+       {
+              int i, total_time = 0, btime = 0, largest;
+              float wttime = 0, turnaround_time = 0, average_wttime, average_turnaround_time;
+              printf("\nEnter Total Number of Processes :: ");
+              scanf("%d", &number_of_process);
+              for(i = 0; i < number_of_process; i++)
+              {
+                    printf("\nProcess%d\n", i+1);
+                    printf("Enter Arrival time :: "); 
+                    scanf("%d", &process_queue[i].artime );
+                    printf("Enter Burst time :: ");
+                    scanf("%d", &process_queue[i].btime);
+                    printf("Enter Priority:\t");
+                    scanf("%d", &process_queue[i].priority);
+                    process_queue[i].status = 0;
+                    btime = btime + process_queue[i].btime;
+              }
+              Sorting_of_Arrival_Time();
+              process_queue[9].priority = -10000;
+              printf("\nProcess Name\tArrival Time\tBurst Time\tPriority\tWaiting Time");
+              for(total_time = process_queue[0].artime; total_time < btime;)
+              {
+                    largest = 9;
+                    for(i = 0; i < number_of_process; i++)
+                    {
+                          if(process_queue[i].artime <= total_time && process_queue[i].status != 1 && process_queue[i].priority > process_queue[largest].priority)
+                          {
+                                largest = i;
+                          }
+                    }
+                    total_time = total_time + process_queue[largest].btime;
+                    process_queue[largest].cutime = total_time;
+process_queue[largest].wttime = process_queue[largest].cutime - process_queue[largest].artime - process_queue[largest].btime; process_queue[largest].turnaround_time = process_queue[largest].cutime - process_queue[largest].artime;
+                    process_queue[largest].status = 1;
+                    wttime = wttime + process_queue[largest].wttime;
+                    turnaround_time = turnaround_time + process_queue[largest].turnaround_time;
+                    printf("\n%d\t\t%d\t\t%d\t\t%d\t\t%d", largest+1, process_queue[largest].artime, process_queue[largest].btime, process_queue[largest].priority, process_queue[largest].wttime);
+              }
+              average_wttime = wttime / number_of_process;
+              average_turnaround_time = turnaround_time / number_of_process;
+              printf("\n\nAverage waiting total time:\t%f\n", average_wttime);
+              printf("Average Turnaround Time:\t%f\n", average_turnaround_time);
+              break;
+       }            
+      }
+      getch();
+ }
