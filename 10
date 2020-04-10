@@ -1,0 +1,30 @@
+#include<stdio.h>
+#include<conio.h>
+int main()
+{
+int h ,i,x;
+
+printf("\n enter the h position");
+scanf("%d",&h);
+printf("enter number of req");
+scanf("%d",&x);
+int r[x];
+for(i=0;i<=x;i++)
+{
+ scanf("%d",&r[i]);
+}
+int d=r[0]-h;
+if(d<0)
+{
+d=d*-1;
+}
+for(i=0;i<=x;i++)
+{
+if(r[i]-r[i-1]>0)
+d=d+(r[i]-r[i-1]);
+else
+d = d+(r[i-1]-r[i]);
+}
+printf("seek time = %d\n",d);
+getch();
+}
